@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "lib": ["es2019", "es2020.promise", "es2020.bigint", "es2020.string"],
+    "module": "commonjs",
+    "target": "es2019",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "noImplicitAny": true,
+    "outDir": "./lib",
+    "baseUrl": "./",
+    "rootDir": "./",
+    "strict": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "exclude": ["node_modules"]
+}
