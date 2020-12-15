@@ -1,9 +1,18 @@
-export interface ConfigOptions {
+export interface APIConfig {
   aws_appsync_region: string;
   aws_appsync_graphqlEndpoint: string;
   aws_appsync_apiKey?: string;
   aws_appsync_authenticationType?: GRAPHQL_AUTH_MODE;
 }
+
+export interface GraphQLAPIConfig {
+  aws_appsync_region: string;
+  aws_appsync_graphqlEndpoint: string;
+  aws_appsync_apiKey?: string;
+  aws_appsync_authenticationType?: GRAPHQL_AUTH_MODE;
+}
+
+export interface RestAPIConfig {}
 
 export interface GraphQLOptions {
   query: string;
