@@ -12,25 +12,73 @@
  */
 
 import https from 'https';
-
-/**
-* HTTP Client for REST requests. Send and receive JSON data.
-* Sign request with AWS credentials if available
-* Usage:
-<pre>
-const restClient = new RestClient();
-restClient.get('...')
-    .then(function(data) {
-        console.log(data);
-    })
-    .catch(err => console.log(err));
-</pre>
-*/
+import http from 'http';
+import AWS from 'aws-sdk';
 export class RestClient {
   /**
    * @param {RestClientOptions} [options] - Instance options
    */
   constructor() {}
+
+  /**
+   * GET HTTP request
+   * @param {string} url - Full request URL
+   * @param {JSON} init - Request extra params
+   * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+   */
+  get(url: string, init: AWS.HttpRequest): Promise<any> {
+    return this._ajax(url, 'GET', init);
+  }
+
+  /**
+   * PUT HTTP request
+   * @param {string} url - Full request URL
+   * @param {json} init - Request extra params
+   * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+   */
+  put(url: string, init: AWS.HttpRequest): Promise<any> {
+    return this._ajax(url, 'PUT', init);
+  }
+
+  /**
+   * PATCH HTTP request
+   * @param {string} url - Full request URL
+   * @param {json} init - Request extra params
+   * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+   */
+  patch(url: string, init: AWS.HttpRequest): Promise<any> {
+    return this._ajax(url, 'PATCH', init);
+  }
+
+  /**
+   * POST HTTP request
+   * @param {string} url - Full request URL
+   * @param {json} init - Request extra params
+   * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+   */
+  post(url: string, init: AWS.HttpRequest): Promise<any> {
+    return this._ajax(url, 'POST', init);
+  }
+
+  /**
+   * DELETE HTTP request
+   * @param {string} url - Full request URL
+   * @param {json} init - Request extra params
+   * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+   */
+  del(url: string, init: AWS.HttpRequest): Promise<any> {
+    return this._ajax(url, 'DELETE', init);
+  }
+
+  /**
+   * HEAD HTTP request
+   * @param {string} url - Full request URL
+   * @param {json} init - Request extra params
+   * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+   */
+  head(url: string, init: AWS.HttpRequest): Promise<any> {
+    return this._ajax(url, 'HEAD', init);
+  }
 
   /**
    * Basic HTTP request. Customizable
@@ -39,7 +87,8 @@ export class RestClient {
    * @param {json} [init] - Request extra params
    * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
    */
-  async ajax(url: string, method: string, req: AWS.HttpRequest) {
+  private async _ajax(url: string, method: string, req: AWS.HttpRequest) {
+    // Convert partial request to full request
     const { host, path } = this._parseUrl(url);
     req.headers.host = host;
     req.headers.path = path;
@@ -59,84 +108,27 @@ export class RestClient {
     }
 
     return new Promise((resolve, reject) => {
-      const httpRequest = https.request({ ...req, host }, (result) => {
-        let dataString = '';
-        result.on('data', (data) => {
-          dataString += data.toString();
-        });
-        result.on('end', function () {
-          resolve(JSON.parse(dataString));
-        });
-        result.on('error', (e) => {
-          reject(e);
-        });
-      });
+      const httpRequest = https.request(
+        { ...req, host },
+        (result: http.IncomingMessage) => {
+          let dataString = '';
+          result.on('data', (data) => {
+            dataString += data.toString();
+          });
+          result.on('end', function () {
+            resolve(JSON.parse(dataString));
+          });
+          result.on('error', (e) => {
+            reject(e);
+          });
+        },
+      );
       httpRequest.on('error', (e) => {
         reject(e);
       });
       httpRequest.write(req.body);
       httpRequest.end();
     });
-  }
-
-  /**
-   * GET HTTP request
-   * @param {string} url - Full request URL
-   * @param {JSON} init - Request extra params
-   * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
-   */
-  get(url: string, init: AWS.HttpRequest): Promise<any> {
-    return this.ajax(url, 'GET', init);
-  }
-
-  /**
-   * PUT HTTP request
-   * @param {string} url - Full request URL
-   * @param {json} init - Request extra params
-   * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
-   */
-  put(url: string, init: AWS.HttpRequest): Promise<any> {
-    return this.ajax(url, 'PUT', init);
-  }
-
-  /**
-   * PATCH HTTP request
-   * @param {string} url - Full request URL
-   * @param {json} init - Request extra params
-   * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
-   */
-  patch(url: string, init: AWS.HttpRequest): Promise<any> {
-    return this.ajax(url, 'PATCH', init);
-  }
-
-  /**
-   * POST HTTP request
-   * @param {string} url - Full request URL
-   * @param {json} init - Request extra params
-   * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
-   */
-  post(url: string, init: AWS.HttpRequest): Promise<any> {
-    return this.ajax(url, 'POST', init);
-  }
-
-  /**
-   * DELETE HTTP request
-   * @param {string} url - Full request URL
-   * @param {json} init - Request extra params
-   * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
-   */
-  del(url: string, init: AWS.HttpRequest): Promise<any> {
-    return this.ajax(url, 'DELETE', init);
-  }
-
-  /**
-   * HEAD HTTP request
-   * @param {string} url - Full request URL
-   * @param {json} init - Request extra params
-   * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
-   */
-  head(url: string, init: AWS.HttpRequest): Promise<any> {
-    return this.ajax(url, 'HEAD', init);
   }
 
   private _parseUrl(url: string) {
