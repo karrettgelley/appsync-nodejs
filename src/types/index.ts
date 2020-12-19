@@ -36,6 +36,6 @@ export interface GraphQLResult<T = object> {
 }
 
 export interface PartialHttpRequest {
-  body: any;
-  headers: any;
+  body: { [key: string]: any };
+  headers: { [key: string]: any };
 }

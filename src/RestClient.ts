@@ -11,9 +11,7 @@
  * and limitations under the License.
  */
 
-import https from 'https';
-import http from 'http';
-import AWS, { Endpoint, HttpRequest } from 'aws-sdk';
+import AWS, { Endpoint } from 'aws-sdk';
 import { PartialHttpRequest, RestClientConfig } from './types';
 import axios, { AxiosRequestConfig, Method } from 'axios';
 export class RestClient {
@@ -132,44 +130,26 @@ export class RestClient {
     // Do not sign the request if client has added 'Authorization' header,
     // which means custom authorizer.
     if (typeof init.headers['Authorization'] == 'undefined') {
-      const creds = this._getCreds(params);
-      libraryHeaders = { ...libraryHeaders, ...creds.headers };
-      // params.headers = creds.headers;
-      // params.data = creds.body;
+      const creds = this._getCreds(url, init);
+      libraryHeaders['Authorization'] = creds['Authorization'];
+      libraryHeaders['X-Amz-Date'] = creds['X-Amz-Date'];
     }
 
     params.headers = {
       ...libraryHeaders,
+      ...init.headers,
     };
-    console.log('fuckshitdick', params);
-    return this._request(params);
-    // return new Promise((resolve, reject) => {
-    //   const httpRequest = https.request(
-    //     { ...req, host },
-    //     (result: http.IncomingMessage) => {
-    //       let dataString = '';
-    //       result.on('data', (data) => {
-    //         dataString += data.toString();
-    //       });
-    //       result.on('end', function () {
-    //         resolve(JSON.parse(dataString));
-    //       });
-    //       result.on('error', (e) => {
-    //         reject(e);
-    //       });
-    //     },
-    //   );
-    //   httpRequest.on('error', (e) => {
-    //     reject(e);
-    //   });
-    //   httpRequest.write(req.body);
-    //   httpRequest.end();
-    // });
 
-    // return this._request(url, req);
+    return this._request(params);
   }
 
-  private _getCreds(init: AxiosRequestConfig) {
+  /**
+   * Returns the authorization headers necessary to make a
+   * request to AppSync.
+   * @param url rest endpoint
+   * @param init a partially constructed http request (headers/body only)
+   */
+  private _getCreds(url: string, init: PartialHttpRequest) {
     if (!this._config) {
       throw new Error('RestClient was not properly configured: null config');
     }
@@ -179,15 +159,14 @@ export class RestClient {
       throw new Error('RestClient was not properly configured: missing region');
     }
 
-    let req = new AWS.HttpRequest(new Endpoint(init.url!), region);
+    let req = new AWS.HttpRequest(new Endpoint(url), region);
 
-    const { host, path } = this._parseUrl(init.url!);
+    const { host, path } = this._parseUrl(url);
     req.headers.host = host;
     req.headers.path = path;
 
-    if (init.data) {
-      req.headers['Content-Type'] = 'application/json; charset=UTF-8';
-      req.body = init.data;
+    if (init.body) {
+      req.body = JSON.stringify(init.body);
     }
 
     // @ts-ignore
@@ -195,7 +174,7 @@ export class RestClient {
     // @ts-ignore
     signer.addAuthorization(AWS.config.credentials, AWS.util.date.getDate());
 
-    return req;
+    return req.headers;
   }
 
   private _request(params: AxiosRequestConfig) {
