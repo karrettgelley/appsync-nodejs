@@ -13,7 +13,7 @@
 
 import https from 'https';
 import http from 'http';
-import AWS, { Endpoint } from 'aws-sdk';
+import AWS, { Endpoint, HttpRequest } from 'aws-sdk';
 import { PartialHttpRequest, RestClientConfig } from './types';
 import axios, { AxiosRequestConfig, Method } from 'axios';
 export class RestClient {
@@ -99,7 +99,7 @@ export class RestClient {
    * @param {json} [init] - Request extra params
    * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
    */
-  private async _ajax(url: string, method: string, init: PartialHttpRequest) {
+  private async _ajax(url: string, method: Method, init: PartialHttpRequest) {
     if (!this._config) {
       throw new Error('RestClient was not properly configured: null config');
     }
@@ -109,27 +109,40 @@ export class RestClient {
       throw new Error('RestClient was not properly configured: missing region');
     }
 
-    let req = new AWS.HttpRequest(new Endpoint(url), region);
+    let params: AxiosRequestConfig = {
+      method,
+      url,
+      headers: {},
+      data: null,
+      responseType: 'json',
+      timeout: 0,
+    };
+
+    let libraryHeaders: any = {};
 
     const { host, path } = this._parseUrl(url);
-    req.headers.host = host;
-    req.headers.path = path;
-    req.method = method;
+    libraryHeaders.host = host;
+    libraryHeaders.path = path;
 
     if (init.body) {
-      req.headers['Content-Type'] = 'application/json; charset=UTF-8';
-      req.body = JSON.stringify(init.body);
+      libraryHeaders['Content-Type'] = 'application/json; charset=UTF-8';
+      params.data = JSON.stringify(init.body);
     }
 
     // Do not sign the request if client has added 'Authorization' header,
     // which means custom authorizer.
     if (typeof init.headers['Authorization'] == 'undefined') {
-      // @ts-ignore
-      const signer = new AWS.Signers.V4(req, 'appsync', true);
-      // @ts-ignore
-      signer.addAuthorization(AWS.config.credentials, AWS.util.date.getDate());
+      const creds = this._getCreds(params);
+      libraryHeaders = { ...libraryHeaders, ...creds.headers };
+      // params.headers = creds.headers;
+      // params.data = creds.body;
     }
 
+    params.headers = {
+      ...libraryHeaders,
+    };
+    console.log('fuckshitdick', params);
+    return this._request(params);
     // return new Promise((resolve, reject) => {
     //   const httpRequest = https.request(
     //     { ...req, host },
@@ -153,19 +166,39 @@ export class RestClient {
     //   httpRequest.end();
     // });
 
-    return this._request(url, req);
+    // return this._request(url, req);
   }
 
-  private _request(url: string, init: AWS.HttpRequest) {
-    let params: AxiosRequestConfig = {
-      url,
-      method: init.method as Method,
-      headers: { ...init.headers },
-      data: init.body,
-      timeout: 0,
-      responseType: 'json',
-    };
+  private _getCreds(init: AxiosRequestConfig) {
+    if (!this._config) {
+      throw new Error('RestClient was not properly configured: null config');
+    }
 
+    const { aws_appsync_region: region } = this._config;
+    if (!region) {
+      throw new Error('RestClient was not properly configured: missing region');
+    }
+
+    let req = new AWS.HttpRequest(new Endpoint(init.url!), region);
+
+    const { host, path } = this._parseUrl(init.url!);
+    req.headers.host = host;
+    req.headers.path = path;
+
+    if (init.data) {
+      req.headers['Content-Type'] = 'application/json; charset=UTF-8';
+      req.body = init.data;
+    }
+
+    // @ts-ignore
+    const signer = new AWS.Signers.V4(req, 'appsync', true);
+    // @ts-ignore
+    signer.addAuthorization(AWS.config.credentials, AWS.util.date.getDate());
+
+    return req;
+  }
+
+  private _request(params: AxiosRequestConfig) {
     return axios(params)
       .then((response) => response.data)
       .catch((error) => {
