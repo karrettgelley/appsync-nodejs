@@ -9,11 +9,12 @@
     "noImplicitAny": true,
     "outDir": "./lib",
     "baseUrl": "./",
-    "rootDir": "./",
+    "rootDir": "./src",
     "strict": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true
   },
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "src/__tests__/**"]
 }

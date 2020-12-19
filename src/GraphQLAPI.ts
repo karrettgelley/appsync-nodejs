@@ -13,7 +13,12 @@
 import { GraphQLError } from 'graphql/error/GraphQLError';
 import { OperationDefinitionNode } from 'graphql/language';
 import { parse } from 'graphql/language/parser';
-import { GraphQLAPIConfig, GraphQLOptions, GraphQLResult } from './types';
+import {
+  GraphQLAPIConfig,
+  GraphQLOptions,
+  GraphQLResult,
+  PartialHttpRequest,
+} from './types';
 import AWS, { Endpoint } from 'aws-sdk';
 import { RestClient } from './RestClient';
 
@@ -47,6 +52,7 @@ export class GraphQLAPIClass {
    */
   configure(config: GraphQLAPIConfig): void {
     this._config = config;
+    this._restClient?.configure(config);
   }
 
   /**
@@ -108,22 +114,19 @@ export class GraphQLAPIClass {
       };
     }
 
-    const req = new AWS.HttpRequest(
-      new Endpoint(appSyncGraphqlEndpoint),
-      region,
-    );
-    req.body = JSON.stringify({
+    let init: PartialHttpRequest = { body: {}, headers: {} };
+    init.body = {
       query,
       variables,
-    });
+    };
 
     if (apiKey) {
-      req.headers['x-api-key'] = apiKey;
+      init.headers['x-api-key'] = apiKey;
     }
 
     let response: GraphQLResult;
     try {
-      response = await this._restClient.post(appSyncGraphqlEndpoint, req);
+      response = await this._restClient.post(appSyncGraphqlEndpoint, init);
     } catch (err) {
       response = {
         data: {},
