@@ -5,6 +5,7 @@ if (!endpoint) {
   console.error(
     'you need to hard code an endpoint in the test file __tests__/test.ts',
   );
+  process.exit(1);
 }
 
 const region = 'us-west-2';
