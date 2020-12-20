@@ -1,4 +1,4 @@
-import API from '../API';
+import API from '../../lib';
 
 const endpoint =
   'https://4pz6zqctdvd2hm2cfghvb4zcem.appsync-api.us-west-2.amazonaws.com/graphql';

@@ -10,7 +10,8 @@ export interface GraphQLAPIConfig {
     aws_appsync_apiKey?: string;
     aws_appsync_authenticationType?: GRAPHQL_AUTH_MODE;
 }
-export interface RestAPIConfig {
+export interface RestClientConfig {
+    aws_appsync_region: string;
 }
 export interface GraphQLOptions {
     query: string;
@@ -25,6 +26,14 @@ export interface GraphQLResult<T = object> {
     data?: T;
     errors?: [object];
     extensions?: {
+        [key: string]: any;
+    };
+}
+export interface PartialHttpRequest {
+    body: {
+        [key: string]: any;
+    };
+    headers: {
         [key: string]: any;
     };
 }
