@@ -1,7 +1,12 @@
 import API from '../../lib';
 
-const endpoint =
-  'https://4pz6zqctdvd2hm2cfghvb4zcem.appsync-api.us-west-2.amazonaws.com/graphql';
+const endpoint = '';
+if (!endpoint) {
+  console.error(
+    'you need to hard code an endpoint in the test file __tests__/test.ts',
+  );
+}
+
 const region = 'us-west-2';
 
 const createError = /* GraphQL */ `
