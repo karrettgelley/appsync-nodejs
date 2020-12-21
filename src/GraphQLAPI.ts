@@ -75,7 +75,6 @@ export class GraphQLAPIClass {
     switch (operationType) {
       case 'query':
       case 'mutation':
-        console.log('PROCESSING REQUEST', operationType);
         return this._graphql({ query, variables });
     }
 
@@ -127,9 +126,7 @@ export class GraphQLAPIClass {
 
     let response: GraphQLResult;
     try {
-      console.log('INITIATING REQUEST');
       response = await this._restClient.post(appSyncGraphqlEndpoint, init);
-      console.log('gqlres', response);
     } catch (err) {
       response = {
         data: {},

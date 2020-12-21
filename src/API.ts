@@ -41,7 +41,7 @@ export class APIClass {
     if (!this._graphqlApi) {
       throw new Error('Missing instance of GraphQLAPI');
     }
-    console.log('GOT A REQUEST');
+
     return this._graphqlApi.graphql(options);
   }
 }

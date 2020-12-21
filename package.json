@@ -1,6 +1,6 @@
 {
   "name": "appsync-nodejs",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "A small library for interacting with an AWS AppSync service in a nodejs environment",
   "main": "./lib/index.js",
   "scripts": {

@@ -66,8 +66,7 @@ export class RestClient {
    * @param {json} init - Request extra params
    * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
    */
-  post(url: string, init: PartialHttpRequest) {
-    console.log('GOT A POST REQUEST');
+  post(url: string, init: PartialHttpRequest): Promise<any> {
     return this._ajax(url, 'POST', init);
   }
 
@@ -99,7 +98,6 @@ export class RestClient {
    * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
    */
   private async _ajax(url: string, method: Method, init: PartialHttpRequest) {
-    console.log('AJAX');
     if (!this._config) {
       throw new Error('RestClient was not properly configured: null config');
     }
@@ -141,10 +139,7 @@ export class RestClient {
       ...init.headers,
     };
 
-    console.log('SENDING REQUEST');
-    const hsit = await this._request(params);
-    console.log('SHIT', hsit);
-    return hsit;
+    return this._request(params);
   }
 
   /**
@@ -181,15 +176,13 @@ export class RestClient {
     return req.headers;
   }
 
-  private async _request(params: AxiosRequestConfig) {
-    try {
-      const shit = await axios(params);
-      console.log('reeeeee', shit);
-      return shit.data;
-    } catch (e) {
-      console.error('erruhhhh', e);
-      throw e;
-    }
+  private _request(params: AxiosRequestConfig) {
+    return axios(params)
+      .then((response) => response.data)
+      .catch((error) => {
+        console.error(error);
+        throw error;
+      });
   }
 
   private _parseUrl(url: string) {
