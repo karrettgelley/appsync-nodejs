@@ -7,6 +7,7 @@ module.exports = {
   },
   target: 'node',
   mode: 'production',
+  externals: [nodeExternals()],
   module: {
     rules: [
       {
