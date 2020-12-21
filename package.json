@@ -1,8 +1,9 @@
 {
   "name": "appsync-nodejs",
-  "version": "1.0.1",
+  "version": "1.0.8",
   "description": "A small library for interacting with an AWS AppSync service in a nodejs environment",
   "main": "./lib/index.js",
+  "module": "./lib/index.js",
   "scripts": {
     "test": "ts-node ./src/__tests__/test.ts",
     "build": "webpack"

@@ -7,7 +7,6 @@ module.exports = {
   },
   target: 'node',
   mode: 'production',
-  externals: [nodeExternals()],
   module: {
     rules: [
       {
@@ -23,6 +22,7 @@ module.exports = {
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, 'lib'),
-    libraryTarget: 'commonjs',
+    libraryTarget: 'umd',
+    library: 'appsync-nodejs',
   },
 };

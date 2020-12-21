@@ -16,5 +16,5 @@
     "forceConsistentCasingInFileNames": true,
     "declaration": true
   },
-  "exclude": ["node_modules", "src/__tests__/**"]
+  "exclude": ["node_modules", "src/__tests__/**", "lib/**/*"]
 }
