@@ -67,6 +67,7 @@ export class RestClient {
    * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
    */
   post(url: string, init: PartialHttpRequest): Promise<any> {
+    console.log('GOT A POST REQUEST');
     return this._ajax(url, 'POST', init);
   }
 
@@ -98,6 +99,7 @@ export class RestClient {
    * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
    */
   private async _ajax(url: string, method: Method, init: PartialHttpRequest) {
+    console.log('AJAX');
     if (!this._config) {
       throw new Error('RestClient was not properly configured: null config');
     }
@@ -139,6 +141,7 @@ export class RestClient {
       ...init.headers,
     };
 
+    console.log('SENDING REQUEST');
     return this._request(params);
   }
 
