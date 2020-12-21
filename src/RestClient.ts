@@ -177,7 +177,6 @@ export class RestClient {
   }
 
   private _request(params: AxiosRequestConfig) {
-    console.log('params', params);
     return axios(params)
       .then((response) => response.data)
       .catch((error) => {
