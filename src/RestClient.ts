@@ -131,8 +131,7 @@ export class RestClient {
     // which means custom authorizer.
     if (typeof init.headers['Authorization'] == 'undefined') {
       const creds = this._getCreds(url, init);
-      libraryHeaders['Authorization'] = creds['Authorization'];
-      libraryHeaders['X-Amz-Date'] = creds['X-Amz-Date'];
+      libraryHeaders = { ...libraryHeaders, ...creds };
     }
 
     params.headers = {
@@ -178,6 +177,7 @@ export class RestClient {
   }
 
   private _request(params: AxiosRequestConfig) {
+    console.log('params', params);
     return axios(params)
       .then((response) => response.data)
       .catch((error) => {
