@@ -66,7 +66,7 @@ export class RestClient {
    * @param {json} init - Request extra params
    * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
    */
-  post(url: string, init: PartialHttpRequest): Promise<any> {
+  post(url: string, init: PartialHttpRequest) {
     console.log('GOT A POST REQUEST');
     return this._ajax(url, 'POST', init);
   }
@@ -142,7 +142,9 @@ export class RestClient {
     };
 
     console.log('SENDING REQUEST');
-    return this._request(params);
+    const hsit = await this._request(params);
+    console.log('SHIT', hsit);
+    return hsit;
   }
 
   /**
