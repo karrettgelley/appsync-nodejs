@@ -181,13 +181,15 @@ export class RestClient {
     return req.headers;
   }
 
-  private _request(params: AxiosRequestConfig) {
-    return axios(params)
-      .then((response) => response.data)
-      .catch((error) => {
-        console.error(error);
-        throw error;
-      });
+  private async _request(params: AxiosRequestConfig) {
+    try {
+      const shit = await axios(params);
+      console.log('reeeeee', shit);
+      return shit.data;
+    } catch (e) {
+      console.error('erruhhhh', e);
+      throw e;
+    }
   }
 
   private _parseUrl(url: string) {
