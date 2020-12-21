@@ -127,6 +127,7 @@ export class GraphQLAPIClass {
     let response: GraphQLResult;
     try {
       response = await this._restClient.post(appSyncGraphqlEndpoint, init);
+      console.log('gqlres', response);
     } catch (err) {
       response = {
         data: {},
