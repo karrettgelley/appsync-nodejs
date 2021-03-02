@@ -1,6 +1,6 @@
 {
   "name": "appsync-nodejs",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "description": "A small library for interacting with an AWS AppSync service in a nodejs environment",
   "main": "./lib/index.js",
   "scripts": {
@@ -9,11 +9,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@bitbucket.org/cloudgolf/appsync-nodejs.git"
+    "url": "https://github.com/golfcloud/appsync-nodejs.git"
   },
   "author": "",
   "license": "ISC",
-  "homepage": "https://bitbucket.org/cloudgolf/appsync-nodejs#readme",
+  "homepage": "https://github.com/golfcloud/appsync-nodejs",
   "devDependencies": {
     "ts-loader": "^8.0.12",
     "ts-node": "^9.1.1",
